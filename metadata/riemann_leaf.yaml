@@ -1,0 +1,5 @@
+image_name: puppet/riemann_hub
+expose:
+  - 5555
+  - 5556
+cmd: riemann
