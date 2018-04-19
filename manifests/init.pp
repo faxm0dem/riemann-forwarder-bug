@@ -25,7 +25,7 @@ class site_riemann::role::branch {
         (exception-stream
           (throttle 1 10 (with {:host our-host :service "forward-leaf" :state "warning"} (adjust [:event #(count %)] #(info %))))
           (async-queue! :forward-leaf {:core-pool-size 16 :max-pool-size 32 :queue-size 1000}
-            (forward (tcp-client :host "riemann-leaf")))))
+            (forward (tcp-client :host "riemann_leaf")))))
       |- EOF
   }
 }
@@ -36,6 +36,9 @@ class site_riemann::role::leaf {
   }
 
   include ::site_riemann
+  riemann::let { 'index':
+    content => 'index (default {:state "ok" :ttl 60} (index))'
+  }
   riemann::stream {'index':}
 }
 
@@ -43,18 +46,14 @@ class site_collectd {
   include ::collectd
 }
 
-node 'riemann-branch1' {
+node 'riemann_branch' {
   include ::site_riemann::role::branch
 }
 
-node 'riemann-branch2' {
-  include ::site_riemann::role::branch
-}
-
-node 'riemann-leaf' {
+node 'riemann_leaf' {
   include ::site_riemann::role::leaf
 }
 
-node 'collectd-tg' {
+node 'collectd_tg' {
   include ::site_collectd
 }

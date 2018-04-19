@@ -1,4 +1,4 @@
-image_name: puppet/riemann_hub
+image_name: riemann-fw-bug/riemann_leaf
 expose:
   - 5555
   - 5556

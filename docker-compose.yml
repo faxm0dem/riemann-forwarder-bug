@@ -1,0 +1,32 @@
+version: '3'
+services:
+  riemann-branch:
+    image: riemann-fw-bug/riemann_branch
+    build:
+      context: .
+      dockerfile: Dockerfile-riemann_branch
+    networks:
+      - backend
+    deploy:
+      mode: replicated
+      replicas: 2
+    ports:
+      - 5555:5555
+  riemann-leaf:
+    image: riemann-fw-bug/riemann_leaf
+    build:
+      context: .
+      dockerfile: Dockerfile-riemann_leaf
+    networks:
+      - backend
+      - frontend
+    ports:
+      - 5555:5555
+      - 5556:5556
+  collectd-tg:
+    image: riemann-fw-bug/collectd_tg
+    build:
+      context: .
+      dockerfile: Dockerfile-collectd_tg
+    networks:
+      - backend
