@@ -2,7 +2,7 @@ class site_common {
   package {'python-pip':
     ensure => 'latest'
   }
-  ~> package {'dumb-init':
+  -> package {'dumb-init':
     ensure   => 'latest',
     provider => 'pip',
   }
@@ -66,6 +66,11 @@ class site_collectd {
                    CheckThresholds true
                  </Node>
                  Tag "collectd"'
+  }
+  collectd::config::plugin {'network':
+    plugin   => 'network',
+    settings => 'Port 25826
+                 Listen "127.0.0.1"'
   }
 }
 
