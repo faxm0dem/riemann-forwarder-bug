@@ -1,3 +1,13 @@
+class site_common {
+  package {'python-pip':
+    ensure => 'latest'
+  }
+  ~> package {'dumb-init':
+    ensure   => 'latest',
+    provider => 'pip',
+  }
+}
+
 class site_riemann {
   wget::fetch { 'download riemann':
     source =>  'https://github.com/riemann/riemann/releases/download/0.3.0/riemann_0.3.0_all.deb',
@@ -44,16 +54,32 @@ class site_riemann::role::leaf {
 
 class site_collectd {
   include ::collectd
+  collectd::config::plugin {'write_riemann':
+    plugin   => 'write_riemann',
+    settings => '<Node "branch">
+                   Host "riemann_branch"
+                   Port "5555"
+                   Protocol "TCP"
+                   StoreRates true
+                   Ttlfactor 4.0
+                   AlwaysAppendDs false
+                   CheckThresholds true
+                 </Node>
+                 Tag "collectd"'
+  }
 }
 
 node 'riemann_branch' {
+  include ::site_common
   include ::site_riemann::role::branch
 }
 
 node 'riemann_leaf' {
+  include ::site_common
   include ::site_riemann::role::leaf
 }
 
 node 'collectd_tg' {
+  include ::site_common
   include ::site_collectd
 }
