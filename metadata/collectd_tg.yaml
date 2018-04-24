@@ -1,3 +1,5 @@
 image_name: riemann-fw-bug/collectd_tg
 cmd:
   - collectd-tg
+  - -d
+  - collectd_fw
