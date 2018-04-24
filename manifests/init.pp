@@ -29,6 +29,12 @@ class site_riemann::role::branch {
   }
 
   class { 'site_riemann': }
+  riemann::listen { 'tcp':
+    options => {
+      'port' => '5555',
+      'host' => '"0.0.0.0"'
+    }
+  }
   riemann::stream { 'forward to leaf':
     content => @("EOF")
       (batch 1000 10
@@ -46,6 +52,18 @@ class site_riemann::role::leaf {
   }
 
   include ::site_riemann
+  riemann::listen { 'tcp':
+    options => {
+      'port' => '5555',
+      'host' => '"0.0.0.0"'
+    }
+  }
+  riemann::listen { 'ws':
+    options => {
+      'port' => '5556',
+      'host' => '"0.0.0.0"'
+    }
+  }
   riemann::let { 'index':
     content => 'index (default {:state "ok" :ttl 60} (index))'
   }
@@ -73,8 +91,7 @@ class site_collectd::fw {
   }
   collectd::config::plugin {'network':
     plugin   => 'network',
-    settings => 'Port 25826
-                 Listen "0.0.0.0"'
+    settings => 'Listen "0.0.0.0" "25826"'
   }
 }
 
