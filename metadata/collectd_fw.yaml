@@ -1,0 +1,8 @@
+image_name: riemann-fw-bug/collectd_fw
+expose:
+  - 25826/udp
+cmd:
+  - collectd
+  - -f
+  - -C
+  - /etc/collectd.d/collectd.conf

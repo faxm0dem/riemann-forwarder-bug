@@ -52,7 +52,11 @@ class site_riemann::role::leaf {
   riemann::stream {'index':}
 }
 
-class site_collectd {
+class site_collectd::tg {
+  include ::collectd
+}
+
+class site_collectd::fw {
   include ::collectd
   collectd::config::plugin {'write_riemann':
     plugin   => 'write_riemann',
@@ -70,7 +74,7 @@ class site_collectd {
   collectd::config::plugin {'network':
     plugin   => 'network',
     settings => 'Port 25826
-                 Listen "127.0.0.1"'
+                 Listen "0.0.0.0"'
   }
 }
 
@@ -86,5 +90,10 @@ node 'riemann_leaf' {
 
 node 'collectd_tg' {
   include ::site_common
-  include ::site_collectd
+  include ::site_collectd::tg
+}
+
+node 'collectd_fw' {
+  include ::site_common
+  include ::site_collectd::fw
 }
