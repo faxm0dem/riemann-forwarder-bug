@@ -5,4 +5,4 @@ cmd:
   - collectd
   - -f
   - -C
-  - /etc/collectd.d/collectd.conf
+  - /etc/collectd/collectd.conf

@@ -7,6 +7,7 @@ puppet docker dockerfile --image-name riemann-fw-bug/riemann_branch > Dockerfile
 puppet docker dockerfile --image-name riemann-fw-bug/riemann_leaf   > Dockerfile-riemann_leaf
 puppet docker dockerfile --image-name riemann-fw-bug/collectd_fw    > Dockerfile-collectd_fw
 puppet docker dockerfile --image-name riemann-fw-bug/collectd_tg    > Dockerfile-collectd_tg
+docker-compose build
 ```
 
 ## Run
