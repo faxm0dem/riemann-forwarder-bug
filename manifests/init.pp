@@ -8,6 +8,40 @@ class site_common {
   }
 }
 
+class site_syslog_ng::role::fw {
+  syslog_ng::source { 's_system':
+    params => {
+      'system' => []
+    }
+  }
+  syslog_ng::destination { 'd_riemann':
+    params => {
+      'riemann' => [
+        { 'host'        => 'riemann_branch' },
+        { 'port'        => 5555 },
+        { 'type'        => 'tcp' },
+        { 'flush-lines' => 16  },
+        { 'description' => '"${MSG}"' },
+        { 'attributes'  =>
+          [
+            { 'scope' => 'all-nv-pairs' },
+          ]
+        }
+      ]
+    }
+  }
+  syslog_ng::log { 'l_main':
+    params => [
+      { 'source'      => 's_system' },
+      { 'destination' => 'd_riemann' },
+    ]
+  }
+}
+
+class site_syslog_ng::role::loggen {
+  include syslog_ng
+}
+
 class site_riemann {
   wget::fetch { 'download riemann':
     source =>  'https://github.com/riemann/riemann/releases/download/0.3.0/riemann_0.3.0_all.deb',
@@ -113,4 +147,14 @@ node 'collectd_tg' {
 node 'collectd_fw' {
   include ::site_common
   include ::site_collectd::fw
+}
+
+node 'syslog_ng_fw' {
+  include ::site_common
+  include ::site_syslog_ng::role::fw
+}
+
+node 'syslog_ng_loggen' {
+  include ::site_common
+  include ::site_syslog_ng::role::loggen
 }

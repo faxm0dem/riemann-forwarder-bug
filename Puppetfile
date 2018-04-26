@@ -6,6 +6,9 @@ mod 'puppetlabs/concat'
 mod 'puppetlabs/apt'
 mod 'puppetlabs/dummy_service'
 mod 'maestrodev/wget'
+mod 'syslog_ng',
+    :git => 'https://github.com/ccin2p3/puppet-syslog_ng.git',
+    :branch => 'hotfix/reload_only_if_running'
 
 mod 'camptocamp/collectd',
   :git => 'https://github.com/camptocamp/puppet-collectd.git',

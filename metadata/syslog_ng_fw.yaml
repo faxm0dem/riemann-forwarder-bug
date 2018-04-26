@@ -1,0 +1,4 @@
+image_name: riemann-fw-bug/syslog_ng_loggen
+cmd:
+  - syslog-ng
+  - -F

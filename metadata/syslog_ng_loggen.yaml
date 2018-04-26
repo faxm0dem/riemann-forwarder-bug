@@ -1,0 +1,10 @@
+image_name: riemann-fw-bug/syslog_ng_loggen
+cmd:
+  - loggen
+  - -r
+  - '100'
+  - -x
+  - -D
+  - -T
+  - -P
+  - --active-connections=10

@@ -41,6 +41,32 @@ services:
       dockerfile: Dockerfile-collectd_tg
     networks:
       - backend
+  syslog_ng_loggen:
+    image: riemann-fw-bug/syslog_ng_loggen
+    depends_on:
+      - syslog_ng_fw
+    build:
+      context: .
+      dockerfile: Dockerfile-syslog_ng_loggen
+    networks:
+      - backend
+  syslog_ng_fw:
+    image: riemann-fw-bug/syslog_ng_fw
+    depends_on:
+      - riemann_branch
+    build:
+      context: .
+      dockerfile: Dockerfile-syslog_ng_fw
+    networks:
+      - backend
 networks:
-  backend: ~
-  frontend: ~
+  backend:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+  frontend:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.48.0.0/16
