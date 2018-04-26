@@ -1,4 +1,5 @@
 ---
+inventory: false
 entrypoint:
   - /usr/local/bin/dumb-init
   - --
