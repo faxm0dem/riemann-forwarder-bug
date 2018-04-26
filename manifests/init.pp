@@ -9,18 +9,33 @@ class site_common {
 }
 
 class site_syslog_ng::role::fw {
+  class { 'syslog_ng':
+    modules => [ 'riemann' ]
+  }
   syslog_ng::source { 's_system':
     params => {
-      'system' => []
+      'network' => [
+        { 'ip_protocol' => 6 },
+        { 'transport'   => 'udp' },
+        { 'tags'        => [ "'syslog'" ] },
+        { 'flags'       => [ 'syslog-protocol' ] },
+      ]
     }
+  }
+  syslog_ng::config { 'version':
+    content => "@version: ${::syslog_ng_version}",
+    order   => '02',
+  }
+  syslog_ng::config { 'scl':
+    content => '@include scl.conf',
+    order   => '03',
   }
   syslog_ng::destination { 'd_riemann':
     params => {
       'riemann' => [
-        { 'host'        => 'riemann_branch' },
+        { 'server'      => 'riemann_branch' },
         { 'port'        => 5555 },
         { 'type'        => 'tcp' },
-        { 'flush-lines' => 16  },
         { 'description' => '"${MSG}"' },
         { 'attributes'  =>
           [
@@ -40,6 +55,11 @@ class site_syslog_ng::role::fw {
 
 class site_syslog_ng::role::loggen {
   include syslog_ng
+  file {'/go':
+    #content => 'sleep 20; loggen -r 100 -i -D -n 2147483647 --active-connections=10 syslog_ng_fw 514',
+    content => 'sleep 20; loggen -r 100 -i -D -n 2147483647 syslog_ng_fw 514',
+    mode    => '0755'
+  }
 }
 
 class site_riemann {
