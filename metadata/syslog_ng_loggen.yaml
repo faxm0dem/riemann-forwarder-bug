@@ -2,8 +2,8 @@ image_name: riemann-fw-bug/syslog_ng_loggen
 cmd:
   - /loggen-loop
   - -P
-  - -x
   - -D
-  - -n 32772
-  - -r 1000
-  - --active-connections=1
+  - -n 2147483647
+  - -r 100
+  - --active-connections=10
+  - syslog_ng_fw 514
