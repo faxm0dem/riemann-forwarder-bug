@@ -23,7 +23,7 @@ class site_syslog_ng::role::fw {
     }
   }
   syslog_ng::config { 'version':
-    content => "@version: ${::syslog_ng_version}",
+    content => "@version: 3.5",
     order   => '02',
   }
   syslog_ng::config { 'scl':
@@ -55,9 +55,8 @@ class site_syslog_ng::role::fw {
 
 class site_syslog_ng::role::loggen {
   include syslog_ng
-  file {'/go':
-    #content => 'sleep 20; loggen -r 100 -i -D -n 2147483647 --active-connections=10 syslog_ng_fw 514',
-    content => 'sleep 20; loggen -r 100 -i -D -n 2147483647 syslog_ng_fw 514',
+  file {'/loggen-loop':
+    content => 'while loggen $@; do sleep 1; done',
     mode    => '0755'
   }
 }

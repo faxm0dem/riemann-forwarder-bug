@@ -10,13 +10,21 @@ NODES.each do |n|
   end
 end
 
-desc 'build docker containers'
-task :compose => NODES.map { |n| "Dockerfile-#{n}" } do
-  sh("docker-compose build")
+namespace :build do
+  NODES.each do |n|
+    desc "generate docker container for #{n}"
+    task "#{n}" => "Dockerfile-#{n}" do
+      sh("docker build -t riemann-fw-bug/#{n} -f Dockerfile-#{n} .")
+    end
+  end
+  desc 'build docker containers'
+  task :compose => NODES.map { |n| "Dockerfile-#{n}" } do
+    sh("docker-compose build")
+  end
 end
 
 desc 'run docker containers'
-task :run do
+task :run => 'build:compose' do
   sh('docker-compose up')
 end
 

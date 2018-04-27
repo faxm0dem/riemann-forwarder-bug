@@ -3,7 +3,7 @@
 ## Build
 
 ```
-rake build
+rake build:compose
 ```
 
 or manually:
@@ -28,3 +28,11 @@ or manually:
 docker-compose up
 ```
 
+## Use
+
+```
+# subscribe to syslog events
+wsdump.py -r 'ws://127.0.0.1:32772/index?subscribe=true&query=tagged+"syslog"'
+# subscribe to collectd events
+wsdump.py -r 'ws://127.0.0.1:32772/index?subscribe=true&query=tagged+"collectd"'
+```
