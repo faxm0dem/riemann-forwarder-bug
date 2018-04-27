@@ -74,37 +74,6 @@ class site_riemann {
   }
   package { 'openjdk-8-jre-headless': }
   -> class { 'riemann': }
-}
-
-class site_riemann::role::branch {
-  Service {
-    provider => dummy
-  }
-
-  class { 'site_riemann': }
-  riemann::listen { 'tcp':
-    options => {
-      'port' => '5555',
-      'host' => '"0.0.0.0"'
-    }
-  }
-  riemann::stream { 'forward to leaf':
-    content => @("EOF")
-      (batch 1000 10
-        (exception-stream
-          (throttle 1 10 (with {:host our-host :service "forward-leaf" :state "warning"} (adjust [:event #(count %)] #(info %))))
-          (async-queue! :forward-leaf {:core-pool-size 16 :max-pool-size 32 :queue-size 1000}
-            (forward (tcp-client :host "riemann_leaf")))))
-      |- EOF
-  }
-}
-
-class site_riemann::role::leaf {
-  Service {
-    provider => dummy
-  }
-
-  include ::site_riemann
   riemann::listen { 'tcp':
     options => {
       'port' => '5555',
@@ -120,6 +89,34 @@ class site_riemann::role::leaf {
   riemann::let { 'index':
     content => 'index (default {:state "ok" :ttl 60} (index))'
   }
+}
+
+class site_riemann::role::branch {
+  Service {
+    provider => dummy
+  }
+
+  include ::site_riemann
+  riemann::stream { 'index instrumentation':
+    content => '(tagged "riemann" index)'
+  }
+  riemann::stream { 'forward to leaf':
+    content => @("EOF")
+        (exception-stream
+          (throttle 1 10 (with {:host our-host :service "forward-leaf" :state "warning"} (adjust [:event #(count %)] #(info %))))
+          (batch 1000 10
+            (async-queue! :forward-leaf {:core-pool-size 16 :max-pool-size 32 :queue-size 1000}
+              (forward (tcp-client :host "riemann_leaf")))))
+      |- EOF
+  }
+}
+
+class site_riemann::role::leaf {
+  Service {
+    provider => dummy
+  }
+
+  include ::site_riemann
   riemann::stream {'index':}
 }
 
